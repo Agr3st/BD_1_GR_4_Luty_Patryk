@@ -1,0 +1,52 @@
+-- a
+UPDATE ksiegowosc.pracownicy
+SET telefon = CONCAT('(+48) ', telefon)
+WHERE telefon IS NOT NULL;
+
+-- b
+UPDATE ksiegowosc.pracownicy
+SET telefon = CONCAT(
+    SUBSTRING(telefon, 1, 3), '-', 
+    SUBSTRING(telefon, 4, 3), '-', 
+    SUBSTRING(telefon, 7)
+)
+WHERE telefon IS NOT NULL;
+
+-- c
+SELECT *
+FROM ksiegowosc.pracownicy
+WHERE LENGTH(nazwisko) = (SELECT MAX(LENGTH(nazwisko)) FROM ksiegowosc.pracownicy);
+
+-- d
+...
+
+-- e
+SELECT
+    p.id_pracownika,
+    p.imie,
+    p.nazwisko,
+    ps.kwota AS pensja,
+    COALESCE(SUM(pr.kwota), 0) AS suma_premii
+FROM
+    ksiegowosc.pracownicy p
+LEFT JOIN
+    ksiegowosc.pensja ps ON p.id_pracownika = ps.id_pracownika
+LEFT JOIN
+    ksiegowosc.premia pr ON p.id_pracownika = pr.id_pracownika
+GROUP BY
+    p.id_pracownika, p.imie, p.nazwisko, ps.kwota;
+
+-- f
+SELECT
+    CONCAT('Pracownik ', p.imie, ' ', p.nazwisko, ', w dniu ', w.data,
+	  ' otrzymał pensję całkowitą na kwotę ', w.kwota, ' zł, 
+ 	   gdzie wynagrodzenie zasadnicze wynosiło: ', pns.kwota, ' zł,
+	   premia: ', COALESCE(pm.kwota, 0), ' zł') AS raport
+FROM
+    ksiegowosc.wynagrodzenie w
+JOIN
+    ksiegowosc.pracownicy p ON w.id_pracownika = p.id_pracownika
+JOIN
+    ksiegowosc.pensja pns ON w.id_pensji = pns.id_pensji
+LEFT JOIN
+    ksiegowosc.premia pm ON w.id_premii = pm.id_premii;
