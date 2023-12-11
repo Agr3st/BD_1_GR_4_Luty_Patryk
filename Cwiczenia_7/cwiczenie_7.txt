@@ -1,0 +1,71 @@
+-- zadanie 1
+
+CREATE OR REPLACE PROCEDURE print_fibonacci(n INT)
+IS
+  FUNCTION fib_gen(num INT) RETURN INT IS
+    fib_num INT;
+    a INT := 0;
+    b INT := 1;
+  BEGIN
+    IF num = 0 THEN
+      RETURN 0;
+    ELSIF num = 1 THEN
+      RETURN 1;
+    ELSE
+      FOR i IN 2..num LOOP
+        fib_num := a + b;
+        a := b;
+        b := fib_num;
+      END LOOP;
+      RETURN fib_num;
+    END IF;
+  END fib_gen;
+
+  fib_num INT;
+
+BEGIN
+  -- Wyświetlanie ciągu fib
+  FOR i IN 0..n-1 LOOP
+    fib_num := fib_gen(i);
+    DBMS_OUTPUT.PUT(fib_num || ' ');
+  END LOOP;
+END print_fibonacci;
+
+
+
+-- zadanie 2
+
+CREATE OR REPLACE TRIGGER uppercase_lastname
+BEFORE INSERT OR UPDATE ON person.person
+FOR EACH ROW
+BEGIN
+  :NEW.lastname := UPPER(:NEW.lastname);
+END;
+
+
+
+
+-- zadanie 3
+
+CREATE OR REPLACE FUNCTION taxRateMonitoring()
+RETURNS TRIGGER AS $$
+DECLARE
+  max_change numeric := 0.3;
+  old_tax_rate numeric;
+  new_tax_rate numeric;
+BEGIN
+
+  old_tax_rate := COALESCE(OLD.TaxRate, 0);
+  new_tax_rate := COALESCE(NEW.TaxRate, 0);
+
+  IF ABS(new_tax_rate - old_tax_rate) / old_tax_rate > max_change THEN
+    INSERT INTO ErrorLog(Message) VALUES ('Zmiana wartości pola "TaxRate" o więcej niż 30% jest niedozwolona.');
+  END IF;
+
+  RETURN NEW;
+END;
+$$
+
+CREATE TRIGGER taxRateMonitoring
+BEFORE UPDATE OF taxrate ON sales.salestaxrate
+FOR EACH ROW
