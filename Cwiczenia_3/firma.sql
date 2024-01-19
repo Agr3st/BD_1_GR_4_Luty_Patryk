@@ -132,4 +132,4 @@ ADD kwota_netto MONEY;
 
 UPDATE rozliczenia.pensje
 SET kwota_netto = kwota * 0.81, -- 19% podatku
-    kwota_brutto = kwota; -- zmiana nazwy kwota na kwota_brutto
+    kwota_brutto = kwota; -- zmiana nazwy kwota na kwota_brutto 
