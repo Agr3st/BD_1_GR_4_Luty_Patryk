@@ -201,7 +201,11 @@ FROM ksiegowosc.pensja
 WHERE kwota > 1000;
 
 -- Wyświetl id pracowników nieposiadających premii, których płaca jest większa niż 2000
--- ....
+SELECT p.id_pracownika, p.imie, p.nazwisko
+FROM ksiegowosc.pracownicy p
+LEFT JOIN ksiegowosc.premia pr ON p.id_pracownika = pr.id_pracownika
+LEFT JOIN ksiegowosc.pensja pe ON p.id_pracownika = pe.id_pracownika
+WHERE pr.id_premii IS NULL AND pe.kwota > 2000;
 
 -- Wyświetl pracowników, których pierwsza litera imienia zaczyna się na literę ‘J’
 SELECT id_pracownika, imie, nazwisko
@@ -214,7 +218,10 @@ FROM ksiegowosc.pracownicy
 WHERE UPPER(nazwisko) LIKE '%N%' AND imie LIKE '%a';
 
 -- Wyświetl imię i nazwisko pracowników oraz liczbę ich nadgodzin, przyjmując, standardowy czas pracy to 160 h miesięcznie.
--- .....
+SELECT p.imie, p.nazwisko, SUM(g.liczba_godzin) - 160 AS nadgodziny
+FROM ksiegowosc.pracownicy p
+JOIN ksiegowosc.godziny g ON p.id_pracownika = g.id_pracownika
+GROUP BY p.id_pracownika, p.imie, p.nazwisko;
 
 -- Wyświetl imię i nazwisko pracowników, których pensja zawiera się w przedziale 4500 – 7000 PLN
 SELECT
@@ -229,7 +236,11 @@ WHERE
     ksiegowosc.pensja.kwota BETWEEN 4500 AND 7000;
 
 -- Wyświetl imię i nazwisko pracowników, którzy pracowali w nadgodzinach i nie otrzymali premii.
--- ...
+SELECT p.imie, p.nazwisko
+FROM ksiegowosc.pracownicy p
+JOIN ksiegowosc.godziny g ON p.id_pracownika = g.id_pracownika
+LEFT JOIN ksiegowosc.premia pr ON p.id_pracownika = pr.id_pracownika
+WHERE g.liczba_godzin > 160 AND pr.id_premii IS NULL;
 
 -- Uszereguj pracowników według pensji. 
 SELECT
