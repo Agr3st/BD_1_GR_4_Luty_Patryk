@@ -71,7 +71,11 @@ Czas wykonania zapytania wynosi 12.809 ms.
 --- Porównanie wyników ---
 Bez indeksów wykonanie opeacji zajęło 35.116 ms, z kolei z indeksami już 12.809 ms - prawie trzykrotnie mniej.
 Dla Hash on customer z indeksami - 180.94 ms, co jest znacznie niższe niż w wersji bez indeksów (413.75).
-W przypadku braku indeksów operacja Seq Scan była stosowana do przeszukiwania całej tabeli customer - jest to operacja sekwencyjna. Z uwagi na fakt, że tabela była duża, było to kosztowne. Dodanie indeksu na kolumnie territoryid umożliwiło zastosowanie operacji Bitmap Heap Scan, która pozwoliła na skutreczne filtrowanie danych. Pondato dzięki indeksowi na territoryid mamy operację Bitmap Index Scan, która wykorzystuje indeks bitmapowy do identyfikacji wierszy, które spełniają warunki - co jest to bardziej efektywne niż pełne przeszukiwanie sekwencyjne w przypadku braku indeksów. 
+W przypadku braku indeksów operacja Seq Scan była stosowana do przeszukiwania całej tabeli customer - jest to operacja sekwencyjna. 
+Z uwagi na fakt, że tabela była duża, było to kosztowne. 
+Dodanie indeksu na kolumnie territoryid umożliwiło zastosowanie operacji Bitmap Heap Scan, która pozwoliła na skutreczne filtrowanie danych. 
+Pondato dzięki indeksowi na territoryid mamy operację Bitmap Index Scan, która wykorzystuje indeks bitmapowy do identyfikacji wierszy -
+- co jest to bardziej efektywne niż pełne przeszukiwanie sekwencyjne w przypadku braku indeksów. 
 
 Wniosek: dla dużych zbiorów danych warto stosować indeksy, gdyż znacznie przyspieszają one przeszukiwanie danych.
 
