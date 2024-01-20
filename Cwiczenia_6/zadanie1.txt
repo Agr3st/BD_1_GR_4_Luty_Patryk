@@ -18,7 +18,14 @@ FROM ksiegowosc.pracownicy
 WHERE LENGTH(nazwisko) = (SELECT MAX(LENGTH(nazwisko)) FROM ksiegowosc.pracownicy);
 
 -- d
-...
+SELECT
+    id_pracownika,
+    imie,
+    nazwisko,
+    MD5(CONVERT(VARCHAR, kwota)) AS pensja_md5
+FROM ksiegowosc.pracownicy
+JOIN ksiegowosc.pensja 
+	ON ksiegowosc.pracownicy.id_pracownika = ksiegowosc.pensja.id_pracownika;
 
 -- e
 SELECT
